@@ -14,7 +14,7 @@ function App() {
    <HeaderComp/>
    <Routes>
      <Route path="/" element={<CardsComp/>} />
-     <Route path="/cart" element={  <CardDetails/>} />
+     <Route path="/cart/:id" element={  <CardDetails/>} />
      <Route path="/about" element={  <About/>} />
      <Route path="/contact" element={  <Contact/>} />
      <Route path="/login" element={  <Login/>} />

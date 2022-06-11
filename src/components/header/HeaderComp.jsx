@@ -1,13 +1,19 @@
 import React,{useState} from "react";
-import { Button, Container, Nav, Navbar} from "react-bootstrap";
+import { Button, Container, Nav, Navbar, Table} from "react-bootstrap";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import {NavLink } from "react-router-dom";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import CloseIcon from '@mui/icons-material/Close';
+import { useSelector } from "react-redux";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const HeaderComp = () => {
+
+  const getdata = useSelector((state) => state.cartreducer.carts);
+  console.log("redux data",getdata);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -30,7 +36,7 @@ const HeaderComp = () => {
           <Button variant="dark">Login</Button>
           </NavLink>
          
-          <Badge badgeContent={4} color="primary"
+          <Badge badgeContent={getdata.length} color="primary"
            id="basic-button"
            aria-controls={open ? 'basic-menu' : undefined}
            aria-haspopup="true"
@@ -49,11 +55,52 @@ const HeaderComp = () => {
           'aria-labelledby': 'basic-button',
         }}
       >
-       <div className="card_details d-flex justify-content-center align-items-center" style={{width:"24rem" , padding: "10px" , position :"relative"}}>
-       <CloseIcon style={{position:"absolute" , top:2,right:20,fontSize:23 ,cursor:"pointer"}} onClick={handleClose} />
-        <p style={{fontSize:22}}>Your cart is Empty</p>
-        <img src="./cart.gif" alt="" className='emptycart_img' style={{width:"5rem",padding:10}} />
-       </div>
+        {
+          getdata.length ? 
+          <div className = "card_details" style={{width: "24rem" , padding: 10}}>
+             <Table>
+               <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Restaurant Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {
+                    getdata.map((e) => {
+                      return (
+                        <>
+                        <tr>
+                          <td>
+                            <NavLink  to={`/cart/${e.id}`}>
+                            <img src={e.imgdata} style={{width : "5rem" , height: "5rem"}} alt="" />
+                            </NavLink>
+                          
+                          </td>
+                          <td>
+                            <p>{e.rname}</p>
+                            <p>Price : Rs.{e.price}</p>
+                            <p>Quantity : Rs.{e.qnty}</p>
+                            <p>
+                              <DeleteIcon style={{color: "red" , fontSize:20 , cursor: "pointer"}}/>
+                            </p>
+                          </td>
+                        </tr>
+                        </>
+                      )
+                    })
+                  }
+                  <p className="text-center">Total : Rs.300</p>
+                </tbody>
+              </Table>
+          </div> : 
+            <div className="card_details d-flex justify-content-center align-items-center" style={{width:"24rem" , padding: "10px" , position :"relative"}}>
+            <CloseIcon style={{position:"absolute" , top:2,right:20,fontSize:23 ,cursor:"pointer"}} onClick={handleClose} />
+             <p style={{fontSize:22}}>Your cart is Empty</p>
+             <img src="./cart.gif" alt="" className='emptycart_img' style={{width:"5rem",padding:10}} />
+            </div>
+        }
+      
       </Menu>
       </Navbar>
     </>
