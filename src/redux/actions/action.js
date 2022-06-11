@@ -8,3 +8,19 @@ export const ADD = (item) => {
         payload : item
     }
 }
+
+export const DELETE = (id) => {
+    return {
+        type : "DELETE_ITEM",
+        payload : id
+    }
+}
+
+
+//remove individual item :
+export const REMOVE = (item) => {
+    return {
+        type : "RMV_ONE",
+        payload : item
+    }
+}

@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState , useEffect} from "react";
 import { Button, Container, Nav, Navbar, Table} from "react-bootstrap";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
@@ -8,11 +8,29 @@ import MenuItem from '@mui/material/MenuItem';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from "react-redux";
 import DeleteIcon from '@mui/icons-material/Delete';
+import {DELETE} from "../../redux/actions/action";
+import { useDispatch } from 'react-redux';
+
+import {UserAuth} from "../../context/AuthContext";
 
 const HeaderComp = () => {
+const {user , logOut} = UserAuth();
 
+const handleSignOut = async () => {
+   try{
+    await logOut()
+   }catch(error){
+    console.log(error);
+   }
+}
+
+
+  const [price , setPrice] = useState(0);
+console.log(price);
   const getdata = useSelector((state) => state.cartreducer.carts);
   console.log("redux data",getdata);
+
+  const dispatch = useDispatch()
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -22,6 +40,24 @@ const HeaderComp = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const dlt = (id) => {
+    dispatch(DELETE(id));
+  }
+
+  const total = () => {
+    let price = 0;
+    getdata.map((ele,k)=>{
+      price = ele.price * ele.qnty + price
+    })
+    setPrice(price);
+  }
+
+  useEffect(()=>{
+    total();
+  },[total]);
+
+
   return (
     <>
       <Navbar bg="dark" variant="dark" style={{height: "60px", zIndex:100}}>
@@ -32,9 +68,17 @@ const HeaderComp = () => {
             <NavLink to="/about"  className="text-decoration-none text-light mx-5">About</NavLink>
             <NavLink to="/contact"  className="text-decoration-none text-light mx-5">Contact Us</NavLink>
           </Nav>
-          <NavLink to="/login"  className="text-decoration-none text-light">
-          <Button variant="dark">Login</Button>
-          </NavLink>
+          <img src={user?.photoURL} style={{width: "40px" ,height : "40px" , borderRadius: "50%"}} alt="" />
+          {user?.displayName ? (
+     <Button variant="dark" onClick={handleSignOut}>
+      {user?.displayName} <strong>LogOut</strong></Button>
+       ) : (
+        <NavLink to="/login"  className="text-decoration-none text-light">
+        <Button variant="dark">Login</Button>
+        </NavLink>
+       )
+          }
+         
          
           <Badge badgeContent={getdata.length} color="primary"
            id="basic-button"
@@ -72,16 +116,16 @@ const HeaderComp = () => {
                         <>
                         <tr>
                           <td>
-                            <NavLink  to={`/cart/${e.id}`}>
+                            <NavLink  to={`/cart/${e.id}`}  onClick={handleClose}>
                             <img src={e.imgdata} style={{width : "5rem" , height: "5rem"}} alt="" />
                             </NavLink>
                           
                           </td>
                           <td>
                             <p>{e.rname}</p>
-                            <p>Price : Rs.{e.price}</p>
-                            <p>Quantity : Rs.{e.qnty}</p>
-                            <p>
+                            <p>Price : Rs.{e.price * e.qnty}</p>
+                            <p>Quantity : {e.qnty}</p>
+                            <p onClick={()=> dlt(e.id)}>
                               <DeleteIcon style={{color: "red" , fontSize:20 , cursor: "pointer"}}/>
                             </p>
                           </td>
@@ -90,7 +134,7 @@ const HeaderComp = () => {
                       )
                     })
                   }
-                  <p className="text-center">Total : Rs.300</p>
+                  <p className="text-center">Total : Rs.{price}</p>
                 </tbody>
               </Table>
           </div> : 

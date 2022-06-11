@@ -6,6 +6,7 @@ import Cardsdata from './../Cardsdata';
 import { useDispatch } from 'react-redux';
 import {ADD} from "../../redux/actions/action";
 
+
 const CardsComp = () => {
   const [data , setData] = useState(Cardsdata)
   console.log(data);
